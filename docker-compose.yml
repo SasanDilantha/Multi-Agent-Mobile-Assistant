@@ -13,23 +13,18 @@ services:
       wait"]
     restart: unless-stopped
     healthcheck:
-      # test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
-      # interval: 20s
-      # timeout: 5s
-      # retries: 5
-      disable: true # Disable healthcheck for Ollama service
-  
+      disable: true # Keep healthcheck disabled
+
   backend:
-    build: ./backend # Build from the Dockerfile in the 'backend' directory
+    build: ./backend
     container_name: multi-agent-backend
     ports:
-      - "5000:5000" # Expose port 5000 for the mobile app to connect
+      - "5000:5000"
     environment:
-      # Pass the Ollama host to the backend container
-      # This allows the backend to find the Ollama service within the Docker network
       - OLLAMA_HOST=http://ollama-server:11434
     depends_on:
-      - ollama # Ensure Ollama service is started before the backend
+      ollama:
+        condition: service_started # Changed to service_started
     restart: unless-stopped
 
 volumes:
